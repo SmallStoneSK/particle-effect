@@ -3,7 +3,8 @@ var ParticleEffect = {
     ctx: null,
     canvas: null,
     particles: [],
-    options: {
+    mouseCoordinates: {},
+    config: {
 
     },
     init: function() {
@@ -29,6 +30,9 @@ var ParticleEffect = {
                 });
             });
         }
+
+        // 监听鼠标的mouseMove事件，记录下鼠标的x,y坐标
+        window.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
     },
     move: function() {
 
@@ -76,6 +80,7 @@ var ParticleEffect = {
             for(var j = i + 1; j < this.particles.length; j++) {
                 var distance = Math.sqrt(Math.pow(this.particles[i].x - this.particles[j].x, 2) + Math.pow(this.particles[i].y - this.particles[j].y, 2));
                 if(distance < 100) {
+                    // 这里我们让距离远的线透明度淡一点，距离近的线透明度深一点
                     this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 100) * .3 + ')';
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
@@ -86,8 +91,36 @@ var ParticleEffect = {
             }
         }
 
+        // 绘制粒子和鼠标之间的连线
+        for(i = 0; i < this.particles.length; i++) {
+            distance = Math.sqrt(Math.pow(this.particles[i].x - this.mouseCoordinates.x, 2) + Math.pow(this.particles[i].y - this.mouseCoordinates.y, 2));
+            if(distance < 100) {
+                this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 100) * .3 + ')';
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+                this.ctx.lineTo(this.mouseCoordinates.x, this.mouseCoordinates.y);
+                this.ctx.closePath();
+                this.ctx.stroke();
+            }
+        }
+
         // 粒子移动，更新相应的x, y坐标
         this.move();
+    },
+    handleMouseMove: function(event) {
+
+        var x, y;
+        event = event || window.event;
+
+        if(event.pageX || event.pageY) {
+            x = event.pageX;
+            y = event.pageY;
+        } else {
+            x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+        }
+
+        this.mouseCoordinates = {x: x, y: y};
     },
     run: function() {
         this.init();
