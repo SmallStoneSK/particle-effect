@@ -3,7 +3,7 @@ var ParticleEffect = {
     ctx: null,
     canvas: null,
     particles: [],
-    mouseCoordinates: {},
+    mouseCoordinates: {x: 0, y: 0},
     config: {
 
     },
@@ -15,20 +15,24 @@ var ParticleEffect = {
 
         // 只有在浏览器支持canvas的情况下才有效
         if(this.ctx) {
+
+            // 设置canvas宽高
             this.canvas.width = windowSize.width;
             this.canvas.height = windowSize.height;
 
-            this.particles = new Array(100).fill().map(function() {
-                return new Particle({
-                    x: Utils.rangeRandom(10, windowSize.width - 10),
-                    y: Utils.rangeRandom(10, windowSize.height - 10),
-                    vx: Utils.rangeRandom(-1.2, 1.2),
-                    vy: Utils.rangeRandom(-1.2, 1.2),
+            var times = 100;
+            this.particles = [];
+            while(times--) {
+                this.particles.push(new Particle({
+                    x: Utils.rangeRandom(4, windowSize.width - 4),
+                    y: Utils.rangeRandom(4, windowSize.height - 4),
+                    vx: Utils.rangeRandom(-1, 1),
+                    vy: Utils.rangeRandom(-1, 1),
                     color: 'rgba(255,255,255,.2)',
-                    scale: Utils.rangeRandom(0.8, 1.2),
-                    radius: 10
-                });
-            });
+                    scale: Utils.rangeRandom(0.5, 0.8),
+                    radius: 4
+                }));
+            }
         }
 
         // 监听鼠标的mouseMove事件，记录下鼠标的x,y坐标
@@ -36,27 +40,20 @@ var ParticleEffect = {
     },
     move: function() {
 
-        // 更新粒子坐标
-        this.particles.forEach(function(item) {
-            item.x += item.vx;
-            item.y += item.vy;
-        });
-
-        // 检测粒子与墙壁的碰撞
-        this.checkCollision();
-    },
-    checkCollision: function() {
-
         var windowSize = Utils.getWindowSize();
 
         this.particles.forEach(function(item) {
 
-            // 如果粒子碰到了 左墙壁 或 右墙壁，则改变粒子的横向运动方向
+            // 更新粒子坐标
+            item.x += item.vx;
+            item.y += item.vy;
+
+            // 如果粒子碰到了左墙壁或右墙壁，则改变粒子的横向运动方向
             if((item.x - item.radius < 0) || (item.x + item.radius > windowSize.width)) {
                 item.vx *= -1;
             }
 
-            // 如果粒子碰到了 上墙壁 或 下墙壁，则改变粒子的纵向运动方向
+            // 如果粒子碰到了上墙壁或下墙壁，则改变粒子的纵向运动方向
             if((item.y - item.radius < 0) || (item.y + item.radius > windowSize.height)) {
                 item.vy *= -1;
             }
@@ -79,9 +76,9 @@ var ParticleEffect = {
         for(var i = 0; i < this.particles.length; i++) {
             for(var j = i + 1; j < this.particles.length; j++) {
                 var distance = Math.sqrt(Math.pow(this.particles[i].x - this.particles[j].x, 2) + Math.pow(this.particles[i].y - this.particles[j].y, 2));
-                if(distance < 100) {
+                if(distance < 75) {
                     // 这里我们让距离远的线透明度淡一点，距离近的线透明度深一点
-                    this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 100) * .3 + ')';
+                    this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 75) * .3 + ')';
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
@@ -94,8 +91,8 @@ var ParticleEffect = {
         // 绘制粒子和鼠标之间的连线
         for(i = 0; i < this.particles.length; i++) {
             distance = Math.sqrt(Math.pow(this.particles[i].x - this.mouseCoordinates.x, 2) + Math.pow(this.particles[i].y - this.mouseCoordinates.y, 2));
-            if(distance < 100) {
-                this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 100) * .3 + ')';
+            if(distance < 75) {
+                this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 75) * .3 + ')';
                 this.ctx.beginPath();
                 this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                 this.ctx.lineTo(this.mouseCoordinates.x, this.mouseCoordinates.y);
