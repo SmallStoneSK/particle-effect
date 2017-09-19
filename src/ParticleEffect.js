@@ -5,10 +5,16 @@ var ParticleEffect = {
     particles: [],
     mouseCoordinates: {x: 0, y: 0},
     config: {
-
+        radius: 5,                      // 默认粒子半径
+        vxRange: [-1, 1],               // 默认粒子横向移动速度范围
+        vyRange: [-1, 1],               // 默认粒子纵向移动速度范围
+        scaleRange: [.5, 1],            // 默认粒子缩放比例范围
+        lineLenThreshold: 125,          // 默认连线长度阈值
+        color: 'rgba(255,255,255,.2)'   // 默认粒子、线条的颜色
     },
-    init: function() {
+    init: function(newConfig) {
 
+        var _this = this;
         var windowSize = Utils.getWindowSize();
         this.canvas = document.getElementById('canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -20,17 +26,22 @@ var ParticleEffect = {
             this.canvas.width = windowSize.width;
             this.canvas.height = windowSize.height;
 
+            // 更新config配置
+            newConfig && Object.keys(newConfig).forEach(function(key) {
+                _this.config[key] = newConfig[key];
+            });
+
             var times = 100;
             this.particles = [];
             while(times--) {
                 this.particles.push(new Particle({
-                    x: Utils.rangeRandom(4, windowSize.width - 4),
-                    y: Utils.rangeRandom(4, windowSize.height - 4),
-                    vx: Utils.rangeRandom(-1, 1),
-                    vy: Utils.rangeRandom(-1, 1),
-                    color: 'rgba(255,255,255,.2)',
-                    scale: Utils.rangeRandom(0.5, 0.8),
-                    radius: 4
+                    x: Utils.rangeRandom(this.config.radius, windowSize.width - this.config.radius),
+                    y: Utils.rangeRandom(this.config.radius, windowSize.height - this.config.radius),
+                    vx: Utils.rangeRandom(this.config.vxRange[0], this.config.vxRange[1]),
+                    vy: Utils.rangeRandom(this.config.vyRange[0], this.config.vyRange[1]),
+                    color: this.config.color,
+                    scale: Utils.rangeRandom(this.config.scaleRange[0], this.config.scaleRange[1]),
+                    radius: this.config.radius
                 }));
             }
         }
@@ -62,6 +73,7 @@ var ParticleEffect = {
     draw: function() {
 
         var _this = this;
+        var lineLenThreshold = this.config.lineLenThreshold;
         var windowSize = Utils.getWindowSize();
 
         // 每次重新绘制之前，需要先清空画布，把上一次的内容清空
@@ -76,9 +88,9 @@ var ParticleEffect = {
         for(var i = 0; i < this.particles.length; i++) {
             for(var j = i + 1; j < this.particles.length; j++) {
                 var distance = Math.sqrt(Math.pow(this.particles[i].x - this.particles[j].x, 2) + Math.pow(this.particles[i].y - this.particles[j].y, 2));
-                if(distance < 75) {
+                if(distance < lineLenThreshold) {
                     // 这里我们让距离远的线透明度淡一点，距离近的线透明度深一点
-                    this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 75) * .3 + ')';
+                    this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / lineLenThreshold) * .2 + ')';
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
@@ -91,8 +103,8 @@ var ParticleEffect = {
         // 绘制粒子和鼠标之间的连线
         for(i = 0; i < this.particles.length; i++) {
             distance = Math.sqrt(Math.pow(this.particles[i].x - this.mouseCoordinates.x, 2) + Math.pow(this.particles[i].y - this.mouseCoordinates.y, 2));
-            if(distance < 75) {
-                this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 75) * .3 + ')';
+            if(distance < lineLenThreshold) {
+                this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / lineLenThreshold) * .2 + ')';
                 this.ctx.beginPath();
                 this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                 this.ctx.lineTo(this.mouseCoordinates.x, this.mouseCoordinates.y);
@@ -119,8 +131,8 @@ var ParticleEffect = {
 
         this.mouseCoordinates = {x: x, y: y};
     },
-    run: function() {
-        this.init();
+    run: function(config) {
+        this.init(config);
         setInterval(this.draw.bind(this), 1000 / 60);
     }
 };
