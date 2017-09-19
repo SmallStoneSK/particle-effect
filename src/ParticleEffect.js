@@ -48,6 +48,9 @@ var ParticleEffect = {
 
         // 监听鼠标的mouseMove事件，记录下鼠标的x,y坐标
         window.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
+
+        // 监听窗口大小改变事件
+        window.addEventListener('resize', this.handleWindowResize.bind(this), false);
     },
     move: function() {
 
@@ -130,6 +133,11 @@ var ParticleEffect = {
         }
 
         this.mouseCoordinates = {x: x, y: y};
+    },
+    handleWindowResize: function() {
+        var windowSize = Utils.getWindowSize();
+        this.canvas.width = windowSize.width;
+        this.canvas.height = windowSize.height;
     },
     run: function(config) {
         this.init(config);
