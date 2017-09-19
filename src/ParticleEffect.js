@@ -31,6 +31,7 @@ var ParticleEffect = {
                 _this.config[key] = newConfig[key];
             });
 
+            // 生成粒子
             var times = 100;
             this.particles = [];
             while(times--) {
@@ -44,13 +45,16 @@ var ParticleEffect = {
                     radius: this.config.radius
                 }));
             }
+
+            // 监听鼠标的mouseMove事件，记录下鼠标的x,y坐标
+            window.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
+
+            // 监听窗口大小改变事件
+            window.addEventListener('resize', this.handleWindowResize.bind(this), false);
+
+            // 兼容requestAnimationFrame
+            this.supportRequestAnimationFrame();
         }
-
-        // 监听鼠标的mouseMove事件，记录下鼠标的x,y坐标
-        window.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
-
-        // 监听窗口大小改变事件
-        window.addEventListener('resize', this.handleWindowResize.bind(this), false);
     },
     move: function() {
 
@@ -118,6 +122,9 @@ var ParticleEffect = {
 
         // 粒子移动，更新相应的x, y坐标
         this.move();
+
+        // 循环调用draw方法
+        window.requestAnimationFrame(this.draw.bind(this));
     },
     handleMouseMove: function(event) {
 
@@ -139,9 +146,22 @@ var ParticleEffect = {
         this.canvas.width = windowSize.width;
         this.canvas.height = windowSize.height;
     },
+    supportRequestAnimationFrame: function() {
+        if(!window.requestAnimationFrame) {
+            window.requestAnimationFrame = (
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.oRequestAnimationFrame ||
+                window.msRequestAnimationFrame ||
+                function (callback) {
+                    setInterval(callback, 1000 / 60)
+                }
+            );
+        }
+    },
     run: function(config) {
         this.init(config);
-        setInterval(this.draw.bind(this), 1000 / 60);
+        window.requestAnimationFrame(this.draw.bind(this));
     }
 };
 
