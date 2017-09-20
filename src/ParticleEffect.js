@@ -145,7 +145,7 @@ var ParticleEffect = {
     },
     handleWindowResize: function() {
         Utils.updateWindowSize();
-        var windowSize = Utils.getRealWindowSize();
+        var windowSize = Utils.getWindowSize();
         this.canvas.width = windowSize.width;
         this.canvas.height = windowSize.height;
     },
