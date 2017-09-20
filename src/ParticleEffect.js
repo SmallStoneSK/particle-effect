@@ -15,12 +15,14 @@ var ParticleEffect = {
     init: function(newConfig) {
 
         var _this = this;
-        var windowSize = Utils.getWindowSize();
         this.canvas = document.getElementById('canvas');
         this.ctx = this.canvas.getContext('2d');
 
         // 只有在浏览器支持canvas的情况下才有效
         if(this.ctx) {
+
+            Utils.updateWindowSize();
+            var windowSize = Utils.getWindowSize();
 
             // 设置canvas宽高
             this.canvas.width = windowSize.width;
@@ -142,7 +144,8 @@ var ParticleEffect = {
         this.mouseCoordinates = {x: x, y: y};
     },
     handleWindowResize: function() {
-        var windowSize = Utils.getWindowSize();
+        Utils.updateWindowSize();
+        var windowSize = Utils.getRealWindowSize();
         this.canvas.width = windowSize.width;
         this.canvas.height = windowSize.height;
     },
@@ -195,11 +198,16 @@ function Particle(attr) {
 
 // 工具
 var Utils = {
+    _windowSize: {
+        width: 0,
+        height: 0
+    },
     getWindowSize: function() {
-        return {
-            width: this.getWindowWidth(),
-            height: this.getWindowHeight()
-        };
+        return this._windowSize;
+    },
+    updateWindowSize: function() {
+        this._windowSize.width = this.getWindowWidth();
+        this._windowSize.height = this.getWindowHeight();
     },
     getWindowWidth: function() {
         return window.innerWidth || document.documentElement.clientWidth;

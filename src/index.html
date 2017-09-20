@@ -23,7 +23,42 @@
     <script>
         window.onload = function() {
             ParticleEffect.run();
+            // test();
         };
+
+        // 实时获取窗口大小 和 从缓存中获取窗口大小 的性能对比
+        function test() {
+            var cache = {width: 1024, height: 780};
+
+            function test(executeFunc, times) {
+
+                var start, end, num = times;
+
+                start = new Date();
+                while(times--) {
+                    executeFunc();
+                }
+                end = new Date();
+
+                console.log(executeFunc.name + ' executes ' + num + 'times and takes ' + (end.getTime() - start.getTime()) / 1000 + 's.');
+            }
+
+            function getWindowSizeRealTime() {
+                return {
+                    width: window.innerWidth || document.documentElement.clientWidth,
+                    height: window.innerHeight || document.documentElement.clientHeight
+                };
+            }
+
+            function getWindowSizeFromCache() {
+                return cache;
+            }
+
+            [1000, 10000, 100000, 1000000].forEach(function(times) {
+                test(getWindowSizeRealTime, times);
+                test(getWindowSizeFromCache, times);
+            });
+        }
     </script>
 </body>
 </html>
