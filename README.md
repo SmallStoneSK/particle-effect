@@ -2,7 +2,7 @@
 这是一个基于canvas实现的粒子运动特效，可以用做页面的背景。演示地址：[http://jsfiddle.net/SmallStone/uqq83dfw/3/](http://jsfiddle.net/SmallStone/uqq83dfw/3/)
 
 # 示例
-!()[http://oo819l870.bkt.clouddn.com/particle-effect.gif]
+![](http://oo819l870.bkt.clouddn.com/particle-effect.gif)
 
 # 基本使用
 1. body插入一个canvas元素，并赋予一个唯一的id(比如bg);
