@@ -99,7 +99,7 @@ var ParticleEffect = {
                 var distance = Math.sqrt(Math.pow(this.particles[i].x - this.particles[j].x, 2) + Math.pow(this.particles[i].y - this.particles[j].y, 2));
                 if(distance < lineLenThreshold) {
                     // 这里我们让距离远的线透明度淡一点，距离近的线透明度深一点
-                    this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / lineLenThreshold) * .2 + ')';
+                    this.ctx.strokeStyle = this.translateColors(this.config.color, (1 - distance / lineLenThreshold));
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
@@ -113,7 +113,7 @@ var ParticleEffect = {
         for(i = 0; i < this.particles.length; i++) {
             distance = Math.sqrt(Math.pow(this.particles[i].x - this.mouseCoordinates.x, 2) + Math.pow(this.particles[i].y - this.mouseCoordinates.y, 2));
             if(distance < lineLenThreshold) {
-                this.ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / lineLenThreshold) * .2 + ')';
+                this.ctx.strokeStyle = this.translateColors(this.config.color, (1 - distance / lineLenThreshold));
                 this.ctx.beginPath();
                 this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                 this.ctx.lineTo(this.mouseCoordinates.x, this.mouseCoordinates.y);
@@ -148,6 +148,31 @@ var ParticleEffect = {
         var windowSize = Utils.getWindowSize();
         this.canvas.width = windowSize.width;
         this.canvas.height = windowSize.height;
+    },
+    translateColors: function(colorStr, ratio) {
+
+        var r, g, b, a = 1, colorValues;
+
+        if(colorStr[0] === '#') {                   // 传的是#RRGGBB形式
+            r = parseInt(colorStr.slice(1, 3), 16);
+            g = parseInt(colorStr.slice(3, 5), 16);
+            b = parseInt(colorStr.slice(5, 7), 16);
+        } else if(colorStr.startsWith('rgb(')) {     // 传的是rgb(r,g,b)形式
+            colorStr = colorStr.slice(4, colorStr.length - 1);
+            colorValues = colorStr.split(',');
+            r = parseInt(colorValues[0].trim());
+            g = parseInt(colorValues[1].trim());
+            b = parseInt(colorValues[2].trim());
+        } else if(colorStr.startsWith('rgba(')) {    // 传的是rgba(r,g,b,a)形式
+            colorStr = colorStr.slice(5, colorStr.length - 1);
+            colorValues = colorStr.split(',');
+            r = parseInt(colorValues[0].trim());
+            g = parseInt(colorValues[1].trim());
+            b = parseInt(colorValues[2].trim());
+            a = parseFloat(colorValues[3].trim());
+        }
+
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + a * ratio + ')';
     },
     supportRequestAnimationFrame: function() {
         if(!window.requestAnimationFrame) {
