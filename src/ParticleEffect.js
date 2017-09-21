@@ -5,6 +5,7 @@ var ParticleEffect = {
     particles: [],
     mouseCoordinates: {x: 0, y: 0},
     config: {
+        id: 'canvas',                   //
         count: 100,                     // 默认创建粒子数量
         radius: 5,                      // 默认粒子半径
         vxRange: [-1, 1],               // 默认粒子横向移动速度范围
@@ -15,8 +16,13 @@ var ParticleEffect = {
     },
     init: function(newConfig) {
 
+        // 更新config配置
+        newConfig && Object.keys(newConfig).forEach(function(key) {
+            _this.config[key] = newConfig[key];
+        });
+
         var _this = this;
-        this.canvas = document.getElementById('canvas');
+        this.canvas = document.getElementById(this.config.id);
         this.ctx = this.canvas.getContext('2d');
 
         // 只有在浏览器支持canvas的情况下才有效
@@ -28,11 +34,6 @@ var ParticleEffect = {
             // 设置canvas宽高
             this.canvas.width = windowSize.width;
             this.canvas.height = windowSize.height;
-
-            // 更新config配置
-            newConfig && Object.keys(newConfig).forEach(function(key) {
-                _this.config[key] = newConfig[key];
-            });
 
             // 生成粒子
             var times = this.config.count;
