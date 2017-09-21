@@ -5,6 +5,7 @@ var ParticleEffect = {
     particles: [],
     mouseCoordinates: {x: 0, y: 0},
     config: {
+        count: 100,                     // 默认创建粒子数量
         radius: 5,                      // 默认粒子半径
         vxRange: [-1, 1],               // 默认粒子横向移动速度范围
         vyRange: [-1, 1],               // 默认粒子纵向移动速度范围
@@ -34,7 +35,7 @@ var ParticleEffect = {
             });
 
             // 生成粒子
-            var times = 100;
+            var times = this.config.count;
             this.particles = [];
             while(times--) {
                 this.particles.push(new Particle({
