@@ -57,7 +57,8 @@ var ParticleEffect = {
             window.addEventListener('resize', this.handleWindowResize.bind(this), false);
 
             // 兼容requestAnimationFrame
-            this.supportRequestAnimationFrame();
+            Utils.supportRequestAnimationFrame();
+            window.requestAnimationFrame(this.draw.bind(this));
         }
     },
     move: function() {
@@ -176,22 +177,8 @@ var ParticleEffect = {
 
         return 'rgba(' + r + ',' + g + ',' + b + ',' + a * ratio + ')';
     },
-    supportRequestAnimationFrame: function() {
-        if(!window.requestAnimationFrame) {
-            window.requestAnimationFrame = (
-                window.webkitRequestAnimationFrame ||
-                window.mozRequestAnimationFrame ||
-                window.oRequestAnimationFrame ||
-                window.msRequestAnimationFrame ||
-                function (callback) {
-                    setInterval(callback, 1000 / 60)
-                }
-            );
-        }
-    },
     run: function(config) {
         this.init(config);
-        window.requestAnimationFrame(this.draw.bind(this));
     }
 };
 
@@ -245,5 +232,18 @@ var Utils = {
     rangeRandom: function(min, max) {
         const diff = max - min;
         return min + Math.random() * diff;
+    },
+    supportRequestAnimationFrame: function() {
+        if(!window.requestAnimationFrame) {
+            window.requestAnimationFrame = (
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.oRequestAnimationFrame ||
+                window.msRequestAnimationFrame ||
+                function (callback) {
+                    setInterval(callback, 1000 / 60)
+                }
+            );
+        }
     }
 };
